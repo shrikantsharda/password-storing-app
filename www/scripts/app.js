@@ -165,27 +165,38 @@ angular.module('App1', ['ionic', 'config', 'ngCordova'])
         // Grab the last active, or the first project
         $scope.activeProject = $scope.projects[Projects.getLastActiveIndex()];
 
-        $scope.bills = []; 
+        $scope.bills = [];
 
-        var loadBills = function(){
+        var loadBills = function() {
             console.log("Update Bills");
-            Bills.all().then(function(data){
-                var b  = [];
-                for(var i = 0; i < data.rows.length; i++){
-                    b.push(data.rows.item(i) );
+            Bills.all().then(function(data) {
+                var b = [];
+                for (var i = 0; i < data.rows.length; i++) {
+                    b.push(data.rows.item(i));
                 }
                 $scope.bills = b;
-            });    
+            });
         }
 
         loadBills();
 
-         $scope.updateBill = function(bill){
+        $scope.updateBill = function(bill) {
             console.log(bill);
 
-            loadBills();   
-        }
 
+            //Move To Factory
+            var query = "UPDATE Bills SET payed = ? WHERE id = ?";
+            
+            var reversePayed = (bill.payed) ? 0 : 1;
+            console.log(reversePayed);
+            $cordovaSQLite.execute(db, query, [reversePayed, bill.id]).then(function(res) {
+                loadBills();
+            }, function(err) {
+                console.error(err);
+            });
+
+            loadBills(); //refresh the scope
+        }
 
 
 

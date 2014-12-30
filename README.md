@@ -1,4 +1,4 @@
-ionic-todo
+Ionic Todo App With SQLite
 ==========
 
 To To application with Cordovas Sqlite

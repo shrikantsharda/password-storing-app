@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title>"App1"</title>
+    <!-- build:css styles/vendor.css -->
+    <!-- <link rel="stylesheet" href="vendor/some.contrib.css"> -->
+    <!-- bower:css -->
+    <link rel="stylesheet" href="lib/ionic/release/css/ionic.css" />
+    <!-- endbower -->
+    <!-- endbuild -->
+    <!-- build:css({.tmp,app}) styles/main.css -->
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- endbuild -->
+  </head>
+  <body ng-app="App1" ng-controller="ToDoCtrl">
+    
+    <ion-header-bar class="bar-positive">
+    <h1 class="title">Bills Payed</h1>
+    </ion-header-bar>
+    <ion-content
+    [delegate-handle=""]
+    [direction=""]
+    [padding=""]
+    [scroll=""]
+    [overflow-scroll=""]
+    [scrollbar-x=""]
+    [scrollbar-y=""]
+    [start-y=""]
+    [on-scroll=""]
+    [on-scroll-complete=""]
+    [has-bouncing=""]>
+    
+    <div class="list">
+      <ion-checkbox
+      ng-repeat="bill in bills"
+      ng-checked="bill.payed"
+      ng-click="updateBill(bill)"
+      >
+      {{bill.name}}
+      </ion-checkbox>
+    </div>
+    </ion-content>
+    
+    <script id="new-task.html" type="text/ng-template">
+    <div class="modal">
+      <!-- Modal header bar -->
+      <ion-header-bar class="bar-secondary">
+      <h1 class="title">New Task</h1>
+      <button class="button button-clear button-positive" ng-click="closeNewTask()">Cancel</button>
+      </ion-header-bar>
+      <!-- Modal content area -->
+      <ion-content>
+      <form ng-submit="createTask(task)">
+        <div class="list">
+          <label class="item item-input">
+            <input type="text" placeholder="What do you need to do?" ng-model="task.title">
+          </label>
+        </div>
+        <div class="padding">
+          <button type="submit" class="button button-block button-positive">Create Task</button>
+        </div>
+      </form>
+      </ion-content>
+    </div>
+    </script>
+    <!-- build:js scripts/vendor.js -->
+    <!-- <script src="vendor/someContribJs.js"></script> -->
+    <!-- bower:js -->
+    <script src="lib/angular/angular.js"></script>
+    <script src="lib/angular-animate/angular-animate.js"></script>
+    <script src="lib/angular-sanitize/angular-sanitize.js"></script>
+    <script src="lib/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="lib/collide/collide.js"></script>
+    <script src="lib/ionic/release/js/ionic.js"></script>
+    <script src="lib/ionic/release/js/ionic-angular.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
+    <!-- Add SQLlight -->
+    <script src="scripts/SQLitePlugin.js"></script>
+    <script src="lib/ngCordova/dist/ng-cordova.js"></script>
+    <!-- cordova script (this will be a 404 during development) -->
+    <script src="cordova.js"></script>
+    <!-- build:js scripts/scripts.js -->
+    <script src="scripts/config.js"></script>
+    <script src="scripts/app.js"></script>
+    <!-- endbuild -->
+  </body>
+</html>

@@ -131,7 +131,11 @@ angular.module('App1', ['ionic', 'config', 'ngCordova'])
         }
     }
 })
-    .factory('Bills', function($q, $cordovaSQLite) {
+    .factory('Bills', function($log, $q, $cordovaSQLite) {
+        var getToday = function(){
+            var d = new Date();
+            return d.getMonth() + 1 + "-" + d.getDate() + "-" + d.getFullYear();
+        }
         return {
             all: function() {
                 var query = "SELECT id, name, payed, checkdate FROM bills";
@@ -149,11 +153,31 @@ angular.module('App1', ['ionic', 'config', 'ngCordova'])
                 });
 
                 return deferred.promise;
+            },
+            add : function(bill){
+                var query = "INSERT INTO bills(name, payed, checkdate) VALUES(?,?,?)";
+                
+                 var deferred = $q.defer();
+
+                $cordovaSQLite.execute(db, query, [bill.name, 0, getToday()]).then(function(result) {
+                    $log.debug('sql success')
+                    deferred.resolve({
+                        rows: 1
+                    });
+                }, function(error) {
+                    console.log("Error: ", error);
+                }, function(updates) {
+                    deferred.update(updates);
+                });
+
+                return deferred.promise;  
+
             }
+
         }
     })
     .controller('ToDoCtrl', function($log, $scope, $timeout, $ionicModal, Projects, Bills, $ionicSideMenuDelegate, $cordovaSQLite) {
-
+        $scope.loadView = false;
 
 
         Projects.init();
@@ -166,6 +190,7 @@ angular.module('App1', ['ionic', 'config', 'ngCordova'])
         $scope.activeProject = $scope.projects[Projects.getLastActiveIndex()];
 
         $scope.bills = [];
+       
 
         var loadBills = function() {
             console.log("Update Bills");
@@ -175,7 +200,9 @@ angular.module('App1', ['ionic', 'config', 'ngCordova'])
                     b.push(data.rows.item(i));
                 }
                 $scope.bills = b;
+                $scope.loadView = true;
             });
+     
         }
 
         loadBills();
@@ -270,10 +297,32 @@ angular.module('App1', ['ionic', 'config', 'ngCordova'])
             });
             $scope.taskModal.hide();
 
+
             // Inefficient, but save all the projects
             Projects.save($scope.projects);
 
             task.title = "";
+        };
+
+        $scope.createBill = function(bill) {
+            if (!$scope.activeProject || !bill) {
+                $log.debug('empty bill in create bill');
+                return;
+            }
+            $log.debug('Creating new bill...', bill);
+
+            Bills.add(bill).then(function(){$log.debug("Success .. Added New Bill")});
+
+            loadBills();
+
+            $scope.taskModal.hide();
+
+            bill.name = "";
+        };
+
+        $scope.newBill = function() {
+            $log.debug('Clicked New BIll');
+            $scope.taskModal.show();
         };
 
         $scope.newTask = function() {

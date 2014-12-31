@@ -13,12 +13,19 @@
     <!-- build:css({.tmp,app}) styles/main.css -->
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
+    <style>
+     [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}  
+    </style>
   </head>
-  <body ng-app="App1" ng-controller="ToDoCtrl">
+  <body ng-app="App1" ng-controller="ToDoCtrl" ng-cloak>
     
     <ion-header-bar class="bar-positive">
     <h1 class="title">Bills Payed</h1>
+     <button ng-show="bills.length" ng-click="newBill()" class="button ion-plus icon-right"> New </button>
     </ion-header-bar>
+    
     <ion-content
     [delegate-handle=""]
     [direction=""]
@@ -30,9 +37,9 @@
     [start-y=""]
     [on-scroll=""]
     [on-scroll-complete=""]
-    [has-bouncing=""]>
+    [has-bouncing=""] ng-show="loadView">
     
-    <div class="list">
+    <div class="list" ng-cloak>
       <ion-checkbox
       ng-repeat="bill in bills"
       ng-checked="bill.payed"
@@ -41,7 +48,8 @@
       {{bill.name}}
       </ion-checkbox>
     </div>
-    </ion-content>
+    
+   <button ng-show="!bills.length" class="" ng-click="newBill()">New Bill</button>
     
     <script id="new-task.html" type="text/ng-template">
     <div class="modal">
@@ -52,16 +60,18 @@
       </ion-header-bar>
       <!-- Modal content area -->
       <ion-content>
-      <form ng-submit="createTask(task)">
+      
+      <form ng-submit="createBill(bill)">
         <div class="list">
           <label class="item item-input">
-            <input type="text" placeholder="What do you need to do?" ng-model="task.title">
+            <input type="text" placeholder="What is your new bill?" ng-model="bill.name">
           </label>
         </div>
         <div class="padding">
-          <button type="submit" class="button button-block button-positive">Create Task</button>
+          <button type="submit" class="button button-block button-positive">Create Bill</button>
         </div>
       </form>
+      
       </ion-content>
     </div>
     </script>

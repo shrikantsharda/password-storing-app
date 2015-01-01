@@ -58,11 +58,11 @@ angular.module('App1', ['ionic', 'config', 'ngCordova'])
                         allProjects.push(result.rows.item(i));
                     }
                 } else {
-                    console.log("no rows");
+                    $debug.warn("no rows");
                 }
             }, function(error) {
 
-                console.log("Error: ", error);
+                $debug.error("Error: ", error);
             }, function(updates) {
                 deferred.update(updates);
             });
@@ -73,7 +73,6 @@ angular.module('App1', ['ionic', 'config', 'ngCordova'])
         init: function() {
             $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS projects(id integer primary key, title string)");
             $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS tasks(id integer primary key, project_id integer , name text, done boolean)");
-
         },
         all: function(_db, $cordovaSQLite) {
             var allProjects = [];
@@ -95,6 +94,7 @@ angular.module('App1', ['ionic', 'config', 'ngCordova'])
                         allProjects.push(result.rows.item(i));
                     }
                 } else {
+                    
                     console.log("no rows");
                 }
             }, function(error) {
@@ -136,9 +136,29 @@ angular.module('App1', ['ionic', 'config', 'ngCordova'])
             var d = new Date();
             return d.getMonth() + 1 + "-" + d.getDate() + "-" + d.getFullYear();
         }
+        var dateHelper = function(){
+            var d = new Date();
+            return {
+                day : function(){
+                    return d.getDate();
+                },
+                month : function(){
+                    return d.getMonth();
+                },
+                year : function(){
+                    return d.getYear();
+                },
+                full : function(){
+                    return d.getMonth() + 1 + "-" + d.getDate() + "-" + d.getFullYear();
+                }
+            }
+        }
+        
         return {
             all: function() {
                 var query = "SELECT id, name, payed, checkdate FROM bills";
+                
+                $log.debug(dateHelper().day());
 
                 var deferred = $q.defer();
 

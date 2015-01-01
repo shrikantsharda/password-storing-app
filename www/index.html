@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-    <title>"App1"</title>
+    <title>Bill Application</title>
     <!-- build:css styles/vendor.css -->
     <!-- <link rel="stylesheet" href="vendor/some.contrib.css"> -->
     <!-- bower:css -->
@@ -13,17 +13,14 @@
     <!-- build:css({.tmp,app}) styles/main.css -->
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
-    <style>
-     [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
-  display: none !important;
-}  
-    </style>
+    
   </head>
   <body ng-app="App1" ng-controller="ToDoCtrl" ng-cloak>
     
-    <ion-header-bar class="bar-positive">
-    <h1 class="title">Bills Payed</h1>
-     <button ng-show="bills.length" ng-click="newBill()" class="button ion-plus icon-right"> New </button>
+    <ion-header-bar class="bar-positive" >
+    <button class="button  button-positive" ng-click='editToggle()'>Edit</button>
+    <h1 class="title">Bills Payed - Month of {{currentMonth}}</h1>
+     <button ng-show="bills.length" ng-click="newBill()" class="button ion-plus icon-right"> </button>
     </ion-header-bar>
     
     <ion-content
@@ -40,23 +37,29 @@
     [has-bouncing=""] ng-show="loadView">
     
     <div class="list" ng-cloak>
-      <ion-checkbox
-      ng-repeat="bill in bills"
-      ng-checked="bill.payed"
-      ng-click="updateBill(bill)"
-      >
-      {{bill.name}}
-      </ion-checkbox>
+      <li class="item item-checkbox item-button-right" ng-repeat="bill in bills">
+
+      
+
+         <label class="checkbox checkboxWithBtn">
+           <input type="checkbox" ng-checked="bill.payed" ng-click="updateBill(bill)">
+         </label>
+        {{bill.name}}
+        <button ng-show="showRemove"  ng-click="removeBill(bill)" class="button button-small button-assertive">Remove</button>
+      </li>
+
+      
+      
     </div>
     
-   <button ng-show="!bills.length" class="" ng-click="newBill()">New Bill</button>
+   <button ng-show="!bills.length" class="button button-block button-positive" ng-click="newBill()">New Bill</button>
     
     <script id="new-task.html" type="text/ng-template">
     <div class="modal">
       <!-- Modal header bar -->
       <ion-header-bar class="bar-secondary">
-      <h1 class="title">New Task</h1>
-      <button class="button button-clear button-positive" ng-click="closeNewTask()">Cancel</button>
+      <h1 class="title">New Bill</h1>
+      <button class="button button-clear button-positive" ng-click="closeNewBill()">Cancel</button>
       </ion-header-bar>
       <!-- Modal content area -->
       <ion-content>

@@ -1,11 +1,9 @@
 Ionic Framework (JS) Todo App With Cordova SQLite
 ==========
 
-An application to show how to use Ionic with the Cordova Sqlite Plugin 
+An application to store passwords 
 
-Simple Todo App Built using ionic and Cordovas SQLite. 
-
-To use Cordova SQLite in the browser please read my blog post : http://therealcarlos.com/using-cordovas-sqlite-plugin-in-webview/
+Simple App Built using ionic and LokiJS 
 
 Requirements
 - Ionic Framework

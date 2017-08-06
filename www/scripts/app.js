@@ -36,17 +36,61 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
   });
 })
 
+// .config(function($stateProvider, $urlRouterProvider) {
+//   $stateProvider
+//     .state('app', {
+//       url:'/app',
+//       templateUrl: 'templates/main.html',
+//       controller: 'FolderCtrl'
+//     })
+//     .state('app.entries', {
+//       url:'/entries',
+//       views: {
+//         'app-entries': {
+//           templateUrl: 'templates/entries.html',
+//           controller: 'FolderCtrl'
+//         }
+//       }
+//     })
+//     .state('app.entry', {
+//       url:'/entries/:entryid',
+//       views: {
+//         'app-entry': {
+//           templateUrl: 'templates/entry.html',
+//           controller: 'FolderCtrl'
+//         }
+//       }
+//     });
+
+//   $urlRouterProvider.otherwise('/app/entries');
+// })
+
 .config(function($stateProvider, $urlRouterProvider) {
   $stateProvider
+    // .state('app', {
+    //   url:'/app',
+    //   templateUrl: 'templates/main.html',
+    //   controller: 'FolderCtrl'
+    // })
     .state('entries', {
       url:'/entries',
-      templateUrl: 'templates/main.html',
-      controller: 'FolderCtrl'
+      // views: {
+      //   'app-entries': {
+  
+      //   }
+      // }
+      templateUrl: 'templates/entries.html',
+          controller: 'FolderCtrl'
     })
-    .state('entries.entry', {
-      url:'entries/:entryid',
+    .state('entry', {
+      url:'/entries/:entryid',
+      // views: {
+      //   'app-entry': {
+          
+      //   }
+      // }
       templateUrl: 'templates/entry.html',
-      controller: 'FolderCtrl'
+          controller: 'FolderCtrl'
     });
 
   $urlRouterProvider.otherwise('/entries');
@@ -102,7 +146,7 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
   }
 })
 
-.controller('FolderCtrl', function($scope, $timeout, $ionicModal, FoldersService, $ionicSideMenuDelegate, $ionicActionSheet, $stateParams, $state, $ionicPopup) {
+.controller('FolderCtrl', function($rootScope, $scope, $timeout, $ionicModal, FoldersService, $ionicSideMenuDelegate, $ionicActionSheet, $stateParams, $ionicPopup) {
 
   var createFolder = function(folderTitle) {
     var newFolder = FoldersService.newFolder(folderTitle);
@@ -116,11 +160,6 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
     if(folderTitle) {
       createFolder(folderTitle);
     }
-  }
-
-  $scope.test = function() {
-    console.log($stateParams.entryid);
-    $state.go('entry');
   }
 
   $scope.selectFolder = function(folder) {
@@ -243,11 +282,12 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
 
   $scope.closeNewEntry = function() {
     $scope.entryModal.hide();
+    $scope.entry = null;
   }
 
   $scope.closeEditEntry = function() {
     $scope.editEntryModal.hide();
-    $scope.entry = null;
+    $scope.entry = $scope.oldEntry;
   }
 
   $scope.showEntryrActionSheet = function(entry) {
@@ -263,18 +303,10 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
         return true;
       },
       buttonClicked: function(index) {
-        // var newFolderTitle = prompt('New Folder Name');
-        // if(newFolderTitle) {
-        //   folder.title = newFolderTitle;
-        //   FoldersService.updateFolder(folder);
-        // }
         $scope.showEditEntry(entry);
         return true;
       },
       destructiveButtonClicked: function() {
-        // FoldersService.deleteFolder(folder);
-        // $scope.activeFolder = $scope.folders[0];
-        // $scope.selectFolder($scope.activeFolder);
         var confirmPopup = $ionicPopup.confirm({
           title: 'Are you sure you want to delete ' + entry.name,
           template: 'All your password details in ' + entry.name + ' will be deleted'
@@ -297,7 +329,9 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
 
   $scope.showEditEntry = function(entry) {
     if ($scope.activeFolder) {
+      $scope.oldEntry = entry;
       $scope.entry = entry;
+      $scope.entryName = entry.name;
       $scope.editEntryModal.show();
     } else {
       alert("Create a Folder First");
@@ -325,6 +359,10 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
       }
     }
     return -1;
+  };
+
+  $scope.showEntry = function(entry) {
+    $rootScope.currEntry = entry;
   };
 
   $scope.toggleFolders = function() {

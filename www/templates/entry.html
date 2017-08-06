@@ -1,12 +1,13 @@
-<ion-view view-title="Entry Details" ng-controller="FolderCtrl">   
+<ion-view view-title="Entry Details">
+<ion-nav-buttons side="right">
+    <button class="button button-icon" ng-click="showEditEntry(currEntry)">
+      <i class="icon ion-compose"></i>
+    </button>
+  </ion-nav-buttons>
       <ion-content>
-        <div class="list card">
-  
-          <div class="item item-avatar">
-            <h2>{{entry.name}}</h2>
-            <p>{{entry.username}}</p>
-          </div>
-  
-        </div>
+            <h2>{{currEntry.name}}</h2>
+            <p>{{currEntry.username}}</p>
+            <p>{{currEntry.password}}</p>
+            <p>{{currEntry.remarks}}</p>
       </ion-content>
     </ion-view>

@@ -1,0 +1,25 @@
+<ion-view view-title="{{activeFolder.title}}" hide-back-button="true">
+<ion-nav-buttons side="left">
+    <button class="button button-icon" ng-click="toggleFolders()">
+      <i class="icon ion-navicon"></i>
+    </button>
+  </ion-nav-buttons>
+    <!-- New Task button-->
+    <ion-nav-buttons side="right">
+    <button class="button button-icon" ng-click="editFolder()" ng-if="folderExist()">
+      <i class="icon ion-compose"></i>
+    </button>
+  </ion-nav-buttons>
+<ion-content>
+
+    <ion-list>
+      <ion-item ng-repeat="entry in activeFolder.entries" href="#/entries/{{entry.id}}" on-hold="showEntryrActionSheet(entry)" ng-click="showEntry(entry)">
+        {{entry.name}}
+      </ion-item>
+    </ion-list>
+
+  </ion-content>
+
+  <ion-floating-button ng-click="newEntry()" has-footer="false" button-color="#2AC9AA" icon="ion-plus" icon-color="#fff" ng-if="activeFolder">
+</ion-floating-button>
+</ion-view>

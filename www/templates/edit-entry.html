@@ -2,7 +2,7 @@
 
     <!-- Modal header bar -->
     <ion-header-bar class="bar-secondary">
-      <h1 class="title">Edit {{entry.name}}</h1>
+      <h1 class="title">Edit "{{entryName}}"</h1>
       <button class="button button-clear button-positive" ng-click="closeEditEntry()">Cancel</button>
     </ion-header-bar>
 
@@ -11,16 +11,20 @@
 
       <form ng-submit="editEntry(entry)">
         <div class="list">
-          <label class="item item-input">
+          <label class = "item item-input item-stacked-label">
+            <span class = "input-label"t>Name of Entry</span>
             <input type="text" placeholder="Name of entry" ng-model="entry.name"><br>
           </label>
-          <label class="item item-input">
+          <label class = "item item-input item-stacked-label">
+            <span class = "input-label"t>Username</span>
             <input type="text" placeholder="Username" ng-model="entry.username"><br>
           </label>
-          <label class="item item-input">  
+          <label class = "item item-input item-stacked-label">
+            <span class = "input-label"t>Password</span>
             <input type="text" placeholder="Password" ng-model="entry.password"><br>
           </label>
-          <label class="item item-input">
+          <label class = "item item-input item-stacked-label">
+            <span class = "input-label"t>Remarks</span>
             <input type="text" placeholder="Remarks" ng-model="entry.remarks"><br>
           </label>
         </div>

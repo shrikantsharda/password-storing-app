@@ -1,11 +1,13 @@
-<ion-view> 
-<ion-content>
+<!--ion-view> 
+<ion-content-->
 <ion-side-menus>
 
       <!-- Center content -->
       
 <ion-side-menu-content>
-  <ion-header-bar class="bar-dark">
+  <ion-nav-bar class="bar-dark">
+  <ion-nav-back-button>
+          </ion-nav-back-button>
     <button class="button button-icon" ng-click="toggleFolders()">
       <i class="icon ion-navicon"></i>
     </button>
@@ -14,17 +16,8 @@
     <button class="button button-icon" ng-click="editFolder()" ng-if="folderExist()">
       <i class="icon ion-compose"></i>
     </button>
-  </ion-header-bar>
-  <ion-floating-button ng-click="newEntry()" has-footer="false" button-color="#2AC9AA" icon="ion-plus" icon-color="#fff" ng-if="activeFolder">
-</ion-floating-button>
-  <ion-content>
-    <ion-list>
-      <ion-item ng-repeat="entry in activeFolder.entries">
-        {{entry.name}}
-      </ion-item>
-    </ion-list>
-
-  </ion-content>
+  </ion-nav-bar>
+  
 </ion-side-menu-content>
 
       <!-- Left menu -->
@@ -36,7 +29,7 @@
     </ion-header-bar>
     <ion-content>
       <ion-list>
-        <ion-item ng-repeat="folder in folders" ng-click="selectFolder(folder)" on-hold="showActionSheet(folder)" ng-class="{active: activeFolder == folder}">
+        <ion-item ng-repeat="folder in folders" ng-click="selectFolder(folder)" on-hold="showFolderActionSheet(folder)" ng-class="{active: activeFolder == folder}">
           {{folder.title}}
         </ion-item>
       </ion-list>
@@ -44,5 +37,5 @@
   </ion-side-menu>
 
     </ion-side-menus>
-  </ion-content>
+  <!--/ion-content>
   </ion-view>

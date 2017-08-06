@@ -44,7 +44,7 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
       controller: 'FolderCtrl'
     })
     .state('entries.entry', {
-      url:'/:entryid',
+      url:'entries/:entryid',
       templateUrl: 'templates/entry.html',
       controller: 'FolderCtrl'
     });
@@ -98,11 +98,11 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
         title: folderTitle,
         entries: []
       };
-    }
+    },
   }
 })
 
-.controller('FolderCtrl', function($scope, $timeout, $ionicModal, FoldersService, $ionicSideMenuDelegate, $ionicActionSheet, $stateParams, $state) {
+.controller('FolderCtrl', function($scope, $timeout, $ionicModal, FoldersService, $ionicSideMenuDelegate, $ionicActionSheet, $stateParams, $state, $ionicPopup) {
 
   var createFolder = function(folderTitle) {
     var newFolder = FoldersService.newFolder(folderTitle);
@@ -175,9 +175,22 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
         return true;
       },
       destructiveButtonClicked: function() {
-        FoldersService.deleteFolder(folder);
-        $scope.activeFolder = $scope.folders[0];
-        $scope.selectFolder($scope.activeFolder);
+        var confirmPopup = $ionicPopup.confirm({
+          title: 'Are you sure you want to delete ' + folder.title,
+          template: 'All your password entries in ' + folder.title + ' will be deleted'
+        });
+
+        confirmPopup.then(function(res) {
+          if (res) {
+            FoldersService.deleteFolder(folder);
+            $scope.activeFolder = $scope.folders[0];
+            $scope.selectFolder($scope.activeFolder);
+          }
+        });
+
+        // FoldersService.deleteFolder(folder);
+        // $scope.activeFolder = $scope.folders[0];
+        // $scope.selectFolder($scope.activeFolder);
         return true;
       }
     });
@@ -262,6 +275,20 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
         // FoldersService.deleteFolder(folder);
         // $scope.activeFolder = $scope.folders[0];
         // $scope.selectFolder($scope.activeFolder);
+        var confirmPopup = $ionicPopup.confirm({
+          title: 'Are you sure you want to delete ' + entry.name,
+          template: 'All your password details in ' + entry.name + ' will be deleted'
+        });
+
+        confirmPopup.then(function(res) {
+          if (res) {
+            if ($scope.activeFolder) {
+              var i = $scope.getEntryIndex(entry);
+              $scope.activeFolder.entries.splice(i, 1);
+              FoldersService.updateFolder($scope.activeFolder);
+            }
+          }
+        });
         return true;
       }
     });
@@ -278,12 +305,26 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
   };
 
   $scope.editEntry = function(entry) {
-    // if ($scope.activeFolder) {
-    //   $scope.entry = entry;
-    //   $scope.editEntryModal.show();
-    // } else {
-    //   alert("Create a Folder First");
-    // }
+    if ($scope.activeFolder) {
+      var i = $scope.getEntryIndex(entry);
+      $scope.activeFolder.entries[i] = entry;
+      FoldersService.updateFolder($scope.activeFolder);
+    } else {
+      alert("Error: No active folder");
+    }
+    $scope.editEntryModal.hide();
+  };
+
+  $scope.getEntryIndex = function(entry) {
+    if ($scope.activeFolder) {
+      var i = 0;
+      for (i = 0; i < $scope.activeFolder.entries.length; i++) {
+        if (entry.id === $scope.activeFolder.entries[i].id) {
+          return i;
+        }
+      }
+    }
+    return -1;
   };
 
   $scope.toggleFolders = function() {

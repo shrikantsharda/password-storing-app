@@ -1,0 +1,34 @@
+<div class="modal">
+
+    <!-- Modal header bar -->
+    <ion-header-bar class="bar-secondary">
+      <h1 class="title">Edit {{entry.name}}</h1>
+      <button class="button button-clear button-positive" ng-click="closeEditEntry()">Cancel</button>
+    </ion-header-bar>
+
+    <!-- Modal content area -->
+    <ion-content>
+
+      <form ng-submit="editEntry(entry)">
+        <div class="list">
+          <label class="item item-input">
+            <input type="text" placeholder="Name of entry" ng-model="entry.name"><br>
+          </label>
+          <label class="item item-input">
+            <input type="text" placeholder="Username" ng-model="entry.username"><br>
+          </label>
+          <label class="item item-input">  
+            <input type="text" placeholder="Password" ng-model="entry.password"><br>
+          </label>
+          <label class="item item-input">
+            <input type="text" placeholder="Remarks" ng-model="entry.remarks"><br>
+          </label>
+        </div>
+        <div class="padding">
+          <button type="submit" class="button button-block button-positive">Edit Entry</button>
+        </div>
+      </form>
+
+    </ion-content>
+
+  </div>

@@ -1,4 +1,10 @@
-<ion-view view-title="{{activeFolder.title}}" hide-back-button="true">
+<ion-view view-title="{{activeFolder.title}}">
+<ion-nav-bar class="bar-dark">
+  <h1 id="navBarTitle" class="title">{{activeFolder.title}}</h1>
+    <ion-nav-back-button class="button-clear">
+            <i class="ion-arrow-left-c"></i> Back
+          </ion-nav-back-button>
+  </ion-nav-bar>
 <ion-nav-buttons side="left">
     <button class="button button-icon" ng-click="toggleFolders()">
       <i class="icon ion-navicon"></i>

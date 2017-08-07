@@ -39,12 +39,7 @@
       <!-- Center content -->
       
 <ion-side-menu-content drag-content="false">
-  <ion-nav-bar class="bar-dark">
-  <h1 id="navBarTitle" class="title">{{activeFolder.title}}</h1>
-    <ion-nav-back-button class="button-clear">
-            <i class="ion-arrow-left-c"></i> Back
-          </ion-nav-back-button>
-  </ion-nav-bar>
+  
   <ion-nav-view></ion-nav-view>
   
 </ion-side-menu-content>
@@ -70,6 +65,7 @@
     <!-- endbuild -->
     <!-- Add SQLlight -->
     <script src="scripts/SQLitePlugin.js"></script>
+    <script src="lib/forge/dist/forge.min.js"></script>
     <script src="lib/ngCordova/dist/ng-cordova.js"></script>
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>

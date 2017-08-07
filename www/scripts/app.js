@@ -33,6 +33,10 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
       $rootScope.folders = folders;
       $rootScope.activeFolder = $rootScope.folders[0];
     });
+    FoldersService.getAllVariables().then(function(variables) {
+      $rootScope.variables = variables;
+    });
+    $rootScope.authString = FoldersService.findVariable('authString');
   });
 })
 
@@ -72,6 +76,31 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
     //   templateUrl: 'templates/main.html',
     //   controller: 'FolderCtrl'
     // })
+    .state('login', {
+      url:'/login',
+      // views: {
+      //   'app-entries': {
+  
+      //   }
+      // }
+      templateUrl: 'templates/login.html',
+          controller: 'FolderCtrl'
+    })
+    .state("createMasterPassword", {
+            url: "/createMasterPassword",
+            templateUrl: "templates/create_masterPassword.html",
+            controller: "FolderCtrl"
+    })
+    .state('resetMasterPassword', {
+      url:'/resetMasterPassword',
+      // views: {
+      //   'app-entries': {
+  
+      //   }
+      // }
+      templateUrl: 'templates/reset_masterPassword.html',
+          controller: 'FolderCtrl'
+    })
     .state('entries', {
       url:'/entries',
       // views: {
@@ -93,12 +122,13 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
           controller: 'FolderCtrl'
     });
 
-  $urlRouterProvider.otherwise('/entries');
+  $urlRouterProvider.otherwise('/resetMasterPassword');
 })
 
 .factory('FoldersService', function($q, Loki) {
   var _db;
   var _folders;
+  var _variables;
 
   return {
     initDB: function() {
@@ -143,6 +173,41 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
         entries: []
       };
     },
+    getAllVariables: function() {
+
+      return $q(function(resolve, reject) {
+        if (_db) {
+          var options = {};
+
+          _db.loadDatabaseInternal(options, function() {
+            _variables = _db.getCollection('variables');
+
+            if (!_variables) {
+              _variables = _db.addCollection('variables');
+            }
+
+            resolve(_variables.data);
+          });
+        }
+      });
+    },
+    addVariable: function(variable) {
+      _variables.insert(variable);
+    },
+    updateVariable: function(variable) {
+      _variables.update(variable);
+    },
+    deleteVariable: function(variable) {
+      _variables.remove(variable);
+    },
+    newVariable: function(variableName) {
+      return {
+        name: variableName
+      };
+    },
+    findVariable: function(variableName) {
+      return _variables.findOne({'name': {'$eq': variableName}});
+    }
   }
 })
 
@@ -166,6 +231,8 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
     $scope.activeFolder = folder;
     $ionicSideMenuDelegate.toggleLeft(false);
     console.log($scope.folders);
+    console.log($scope.variables);
+    console.log($scope.authString);
   }
 
   $ionicModal.fromTemplateUrl('templates/new-entry.html', function(modal) {
@@ -251,7 +318,11 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
   }
 
   $scope.createEntry = function(entry) {
-    if(!$scope.activeFolder || !entry) {
+    if(!$scope.activeFolder) {
+      return;
+    } else if (!entry || !entry.name || !entry.username || !entry.password || entry.name === '' || entry.username === '' || entry.password === '') {
+      alert("Name, Username and Password are required!");
+      //$scope.entryModal.hide();
       return;
     }
     $scope.activeFolder.entries.push({
@@ -346,6 +417,10 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
   };
 
   $scope.editEntry = function(entry) {
+    if (!entry || !entry.name || !entry.username || !entry.password || entry.name === '' || entry.username === '' || entry.password === '') {
+      alert("Name, Username and Password are required!");
+      return;
+    }
     if ($scope.activeFolder) {
       var i = $scope.getEntryIndex(entry);
       $scope.activeFolder.entries[i] = entry;

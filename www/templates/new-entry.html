@@ -9,23 +9,23 @@
     <!-- Modal content area -->
     <ion-content>
 
-      <form ng-submit="createEntry(entry)">
+      <form ng-submit="createEntry(newEntry)">
         <div class="list">
           <label class = "item item-input item-stacked-label">
             <span class = "input-label"t>Name of Entry</span>
-            <input type="text" placeholder="Name of entry" ng-model="entry.name"><br>
+            <input type="text" placeholder="Name of entry" ng-model="newEntry.name"><br>
           </label>
           <label class = "item item-input item-stacked-label">
             <span class = "input-label"t>Username</span>
-            <input type="text" placeholder="Username" ng-model="entry.username"><br>
+            <input type="text" placeholder="Username" ng-model="newEntry.username"><br>
           </label>
           <label class = "item item-input item-stacked-label">
             <span class = "input-label"t>Password</span>
-            <input type="text" placeholder="Password" ng-model="entry.password"><br>
+            <input type="text" placeholder="Password" ng-model="newEntry.password"><br>
           </label>
           <label class = "item item-input item-stacked-label">
             <span class = "input-label"t>Remarks</span>
-            <input type="text" placeholder="Remarks" ng-model="entry.remarks"><br>
+            <textarea rows="3" ng-model="newEntry.remarks" placeholder="Remarks"></textarea><br>
           </label>
         </div>
         <div class="padding">

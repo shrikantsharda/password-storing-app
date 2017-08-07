@@ -4,10 +4,31 @@
       <i class="icon ion-compose"></i>
     </button>
   </ion-nav-buttons>
-      <ion-content>
-            <h2>{{currEntry.name}}</h2>
+      <ion-content> 
+            <div class = "card list" style="text-align:center">
+   <div class = "item item-divider">
+      {{currEntry.name}}
+   </div>
+   
+   <div class = "item item-text-wrap" style="text-align:center">
+      Username: {{currEntry.username}}
+   </div>
+
+   <div class = "item item-text-wrap" style="text-align:center">
+      Password: {{currEntry.password}}
+   </div>
+   
+   <div class = "item item-divider" style="text-align:center" ng-if="currEntry.remarks !== undefined && currEntry.remarks !== ''">
+      Remarks
+   </div>
+
+   <div class = "item item-text-wrap" style="text-align:center" ng-if="currEntry.remarks !== undefined && currEntry.remarks !== ''">
+      <pre>{{currEntry.remarks}}</pre>
+   </div>
+</div>
+            <!--h2>{{currEntry.name}}</h2>
             <p>{{currEntry.username}}</p>
             <p>{{currEntry.password}}</p>
-            <p>{{currEntry.remarks}}</p>
+            <p>{{currEntry.remarks}}</p-->
       </ion-content>
     </ion-view>

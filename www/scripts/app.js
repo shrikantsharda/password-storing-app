@@ -182,7 +182,7 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
 
   $scope.editFolder = function() {
     if ($scope.activeFolder) {
-      var newFolderTitle = prompt('New Folder Name');
+      var newFolderTitle = prompt('New name of folder ' + $scope.activeFolder.title);
       if(newFolderTitle) {
         $scope.activeFolder.title = newFolderTitle;
         FoldersService.updateFolder($scope.activeFolder);
@@ -272,7 +272,7 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
     entry.remarks = "";
   };
 
-  $scope.newEntry = function() {
+  $scope.showNewEntry = function() {
     if ($scope.activeFolder) {
       $scope.entryModal.show();
     } else {
@@ -282,12 +282,12 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
 
   $scope.closeNewEntry = function() {
     $scope.entryModal.hide();
-    $scope.entry = null;
+    $scope.newEntry= null;
   }
 
   $scope.closeEditEntry = function() {
     $scope.editEntryModal.hide();
-    $scope.entry = $scope.oldEntry;
+    $scope.currEntry = $scope.oldEntry;
   }
 
   $scope.showEntryrActionSheet = function(entry) {
@@ -327,9 +327,16 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
     console.log(entry.name);
   }
 
+  $scope.copyObj = function(dst, src) {
+    Object.keys(src).forEach(function(key) {
+      dst[key] = src[key];
+    });
+  };
+
   $scope.showEditEntry = function(entry) {
     if ($scope.activeFolder) {
-      $scope.oldEntry = entry;
+      $scope.oldEntry = {};
+      $scope.copyObj($scope.oldEntry, entry);
       $scope.entry = entry;
       $scope.entryName = entry.name;
       $scope.editEntryModal.show();

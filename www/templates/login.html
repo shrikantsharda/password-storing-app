@@ -6,13 +6,13 @@
         <div>
             <div class="list list-inset">
                 <label class="item item-input">
-                    <input ng-model="masterpassword" type="password" placeholder="Master Password" />
+                    <input ng-model="enteredMasterPassword" type="password" placeholder="Master Password" />
                 </label>
             </div>
             <div class="padding-left padding-right">
                 <div class="button-bar">
-                    <a class="button" ng-click="unlock(masterpassword)">Unlock</a>
-                    <a class="button" ng-click="reset()">Reset</a>
+                    <a class="button" ng-click="unlockApp(enteredMasterPassword)">Unlock</a>
+                    <a class="button" ng-click="showResetScreen()">Reset</a>
                 </div>
             </div>
         </div>

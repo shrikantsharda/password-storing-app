@@ -9,7 +9,7 @@
 
 angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
 
-.run(function($ionicPlatform, $cordovaSQLite, $rootScope, FoldersService) {
+.run(function($ionicPlatform, $cordovaSQLite, $rootScope, FoldersService, $state, $cipherFactory) {
   $ionicPlatform.ready(function() {
     if(window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -37,52 +37,25 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
       $rootScope.variables = variables;
     });
     $rootScope.authString = FoldersService.findVariable('authString');
+
+    if (!$rootScope.authString) {
+      $state.go('createMasterPassword');
+    } else {
+      $state.go('login');
+    }
   });
+  document.addEventListener("resume", function() {
+    $state.go("login", {}, {location: "replace"});
+  }, false);
+  document.addEventListener("pause", function() {
+    $state.go("login", {}, {location: "replace"});
+  }, false);
 })
-
-// .config(function($stateProvider, $urlRouterProvider) {
-//   $stateProvider
-//     .state('app', {
-//       url:'/app',
-//       templateUrl: 'templates/main.html',
-//       controller: 'FolderCtrl'
-//     })
-//     .state('app.entries', {
-//       url:'/entries',
-//       views: {
-//         'app-entries': {
-//           templateUrl: 'templates/entries.html',
-//           controller: 'FolderCtrl'
-//         }
-//       }
-//     })
-//     .state('app.entry', {
-//       url:'/entries/:entryid',
-//       views: {
-//         'app-entry': {
-//           templateUrl: 'templates/entry.html',
-//           controller: 'FolderCtrl'
-//         }
-//       }
-//     });
-
-//   $urlRouterProvider.otherwise('/app/entries');
-// })
 
 .config(function($stateProvider, $urlRouterProvider) {
   $stateProvider
-    // .state('app', {
-    //   url:'/app',
-    //   templateUrl: 'templates/main.html',
-    //   controller: 'FolderCtrl'
-    // })
     .state('login', {
       url:'/login',
-      // views: {
-      //   'app-entries': {
-  
-      //   }
-      // }
       templateUrl: 'templates/login.html',
           controller: 'FolderCtrl'
     })
@@ -93,36 +66,54 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
     })
     .state('resetMasterPassword', {
       url:'/resetMasterPassword',
-      // views: {
-      //   'app-entries': {
-  
-      //   }
-      // }
       templateUrl: 'templates/reset_masterPassword.html',
           controller: 'FolderCtrl'
     })
     .state('entries', {
       url:'/entries',
-      // views: {
-      //   'app-entries': {
-  
-      //   }
-      // }
       templateUrl: 'templates/entries.html',
           controller: 'FolderCtrl'
     })
     .state('entry', {
       url:'/entries/:entryid',
-      // views: {
-      //   'app-entry': {
-          
-      //   }
-      // }
       templateUrl: 'templates/entry.html',
           controller: 'FolderCtrl'
     });
 
-  $urlRouterProvider.otherwise('/resetMasterPassword');
+  //$urlRouterProvider.otherwise('/resetMasterPassword');
+})
+
+.factory("$cipherFactory", function() {
+
+    return {
+
+        encrypt: function(message, password) {
+            var salt = forge.random.getBytesSync(128);
+            var key = forge.pkcs5.pbkdf2(password, salt, 4, 16);
+            var iv = forge.random.getBytesSync(16);
+            var cipher = forge.cipher.createCipher('AES-CBC', key);
+            cipher.start({iv: iv});
+            cipher.update(forge.util.createBuffer(message));
+            cipher.finish();
+            var cipherText = forge.util.encode64(cipher.output.getBytes());
+            return {cipher_text: cipherText, salt: forge.util.encode64(salt), iv: forge.util.encode64(iv)};
+        },
+
+        decrypt: function(cipherText, password, salt, iv, options) {
+            var key = forge.pkcs5.pbkdf2(password, forge.util.decode64(salt), 4, 16);
+            var decipher = forge.cipher.createDecipher('AES-CBC', key);
+            decipher.start({iv: forge.util.decode64(iv)});
+            decipher.update(forge.util.createBuffer(forge.util.decode64(cipherText)));
+            decipher.finish();
+            if(options !== undefined && options.hasOwnProperty("output") && options.output === "hex") {
+                return decipher.output.toHex();
+            } else {
+                return decipher.output.toString();
+            }
+        }
+
+    };
+
 })
 
 .factory('FoldersService', function($q, Loki) {
@@ -211,7 +202,54 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
   }
 })
 
-.controller('FolderCtrl', function($rootScope, $scope, $timeout, $ionicModal, FoldersService, $ionicSideMenuDelegate, $ionicActionSheet, $stateParams, $ionicPopup) {
+.controller('FolderCtrl', function($rootScope, $scope, $timeout, $ionicModal, FoldersService, $cipherFactory, $ionicSideMenuDelegate, $ionicActionSheet, $stateParams, $ionicPopup, $state) {
+
+  $scope.createMasterPassword = function(newMasterPassword) {
+    if (!newMasterPassword || newMasterPassword === '') {
+      alert("Master Password Cannot be blank!");
+      return;
+    }
+    var temp = $cipherFactory.encrypt("Authenticated", newMasterPassword);
+    console.log(temp);
+    var masterPass = FoldersService.newVariable('authString');
+    $scope.copyObj(masterPass, temp);
+    console.log(masterPass);
+    FoldersService.addVariable(masterPass);
+    $rootScope.storedMasterPass = newMasterPassword;
+    $state.go('entries');
+  }
+
+  $scope.unlockApp = function(enteredMasterPassword) {
+    var decipherPhrase = $cipherFactory.decrypt($scope.authString.cipher_text, enteredMasterPassword, $scope.authString.salt, $scope.authString.iv, {output: "hex"});
+    if (decipherPhrase === "Authenticated".toHex()) {
+      $state.go('entries');
+      enteredMasterPassword = {};
+      $rootScope.storedMasterPass = enteredMasterPassword;
+    } else {
+      alert("Password Incorrect!");
+    }
+  }
+
+  $scope.showResetScreen = function() {
+    $state.go('resetMasterPassword');
+  }
+
+  $scope.resetMasterPass = function(oldMasterPassword, resetNewMasterPassword, confirmRestetPassword) {
+    if (resetNewMasterPassword !== confirmRestetPassword) {
+      alert("The Confirm Password doesn't match!");
+    } else if (!oldMasterPassword || !resetNewMasterPassword || !confirmRestetPassword || oldMasterPassword === '') {
+      alert("All fields are compulsory!");
+    } else {
+      var decipherPhrase = $cipherFactory.decrypt($scope.authString.cipher_text, oldMasterPassword, $scope.authString.salt, $scope.authString.iv, {output: "hex"});
+      if (decipherPhrase === "Authenticated".toHex()) {
+        var temp = $cipherFactory.encrypt("Authenticated", resetNewMasterPassword);
+        $scope.copyObj($scope.authString, temp);
+        FoldersService.updateVariable($scope.authString);
+        $rootScope.storedMasterPass = resetNewMasterPassword;
+        $state.go('entries');
+      }
+    }
+  }
 
   var createFolder = function(folderTitle) {
     var newFolder = FoldersService.newFolder(folderTitle);
@@ -463,6 +501,17 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
   //   }
   // }, 1000);
 })
+
+String.prototype.toHex = function() {
+    var buffer = forge.util.createBuffer(this.toString());
+    return buffer.toHex();
+}
+
+String.prototype.toSHA1 = function() {
+    var md = forge.md.sha1.create();
+    md.update(this);
+    return md.digest().toHex();
+}
 
 // .factory('FoldersServicePouch', function($q) {
 //   var db;

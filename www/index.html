@@ -29,7 +29,7 @@
     </ion-header-bar>
     <ion-content>
       <ion-list>
-        <ion-item ng-repeat="folder in folders" ng-click="selectFolder(folder)" on-hold="showFolderActionSheet(folder)" ng-class="{active: activeFolder == folder}">
+        <ion-item ng-repeat="folder in folders track by folder.id" ng-click="selectFolder(folder)" on-hold="showFolderActionSheet(folder)" ng-class="{active: activeFolder == folder}">
           {{folder.title}}
         </ion-item>
       </ion-list>

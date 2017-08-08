@@ -1,21 +1,22 @@
 <ion-view view-title="{{activeFolder.title}}">
 <ion-nav-bar class="bar-dark">
-  <h1 id="navBarTitle" class="title">{{activeFolder.title}}</h1>
-    <ion-nav-back-button class="button-clear">
+  <!--h1 id="navBarTitle" class="title">{{activeFolder.title}}</h1-->
+    <!--ion-nav-back-button class="button-clear">
             <i class="ion-arrow-left-c"></i> Back
-          </ion-nav-back-button>
-  </ion-nav-bar>
-<ion-nav-buttons side="left">
+          </ion-nav-back-button-->
+    <ion-nav-buttons side="left">
     <button class="button button-icon" ng-click="toggleFolders()">
       <i class="icon ion-navicon"></i>
     </button>
   </ion-nav-buttons>
+  <h1 id="navBarTitle" class="title">{{activeFolder.title}}</h1>
     <!-- New Task button-->
     <ion-nav-buttons side="right">
     <button class="button button-icon" ng-click="editFolder()" ng-if="folderExist()">
       <i class="icon ion-compose"></i>
     </button>
   </ion-nav-buttons>
+  </ion-nav-bar>
 <ion-content>
 
     <ion-list>

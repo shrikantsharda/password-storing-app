@@ -1,4 +1,4 @@
-Ionic Framework (JS) Todo App With Cordova SQLite
+Ionic Framework (JS) Todo App With LokiJS
 ==========
 
 An application to store passwords 

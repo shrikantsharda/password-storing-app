@@ -44,6 +44,9 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
       $state.go('login');
     }
   });
+  $ionicPlatform.registerBackButtonAction(function (event) {
+    event.preventDefault();
+  }, 100);
   document.addEventListener("resume", function() {
     $state.go("login", {}, {location: "replace"});
   }, false);
@@ -599,7 +602,8 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
     if ($rootScope.activeFolder && $rootScope.data.activeFolder) {
       $scope.oldEntry = {};
       copyObj($scope.oldEntry, entry);
-      $scope.entry = entry;
+      $scope.tempEditEntry = {};
+      copyObj($scope.tempEditEntry, entry);
       $scope.entryName = entry.name;
       $scope.editEntryModal.show();
     } else {
@@ -628,6 +632,7 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
       $rootScope.data.activeFolder.entries[j] = encryptedEntry;
       FoldersService.updateFolder($rootScope.data.activeFolder);
       $rootScope.activeFolder.entries[i] = entry;
+      copyObj($rootScope.currEntry, entry);
     } else {
       alert("Error: No active folder");
     }

@@ -20,8 +20,8 @@
 <ion-content>
 
     <ion-list>
-      <ion-item ng-repeat="entry in activeFolder.entries" href="#/entries/{{entry.id}}" on-hold="showEntryrActionSheet(entry)" ng-click="showEntry(entry)">
-        {{entry.name}}
+      <ion-item ng-repeat="folderEntry in activeFolder.entries" href="#/entries/{{folderEntry.id}}" on-hold="showEntryrActionSheet(folderEntry)" ng-click="showEntry(folderEntry)">
+        {{folderEntry.name}}
       </ion-item>
     </ion-list>
 

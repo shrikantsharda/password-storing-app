@@ -9,23 +9,23 @@
     <!-- Modal content area -->
     <ion-content>
 
-      <form ng-submit="editEntry(entry)">
+      <form ng-submit="editEntry(tempEditEntry)">
         <div class="list">
           <label class = "item item-input item-stacked-label">
             <span class = "input-label"t>Name of Entry</span>
-            <input type="text" placeholder="Name of entry" ng-model="entry.name"><br>
+            <input type="text" placeholder="Name of entry" ng-model="tempEditEntry.name"><br>
           </label>
           <label class = "item item-input item-stacked-label">
             <span class = "input-label"t>Username</span>
-            <input type="text" placeholder="Username" ng-model="entry.username"><br>
+            <input type="text" placeholder="Username" ng-model="tempEditEntry.username"><br>
           </label>
           <label class = "item item-input item-stacked-label">
             <span class = "input-label"t>Password</span>
-            <input type="text" placeholder="Password" ng-model="entry.password"><br>
+            <input type="text" placeholder="Password" ng-model="tempEditEntry.password"><br>
           </label>
           <label class = "item item-input item-stacked-label">
             <span class = "input-label"t>Remarks</span>
-            <textarea rows="3" ng-model="entry.remarks" placeholder="Remarks"></textarea><br>
+            <textarea rows="3" ng-model="tempEditEntry.remarks" placeholder="Remarks"></textarea><br>
           </label>
         </div>
         <div class="padding">

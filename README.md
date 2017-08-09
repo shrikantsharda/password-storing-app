@@ -1,9 +1,9 @@
-Ionic Framework (JS) Todo App With LokiJS
+Ionic Framework Simple App With LokiJS
 ==========
 
-An application to store passwords 
+An application to store passwords locally on device. The passwords are encrypted before storing.
 
-Simple App Built using ionic and LokiJS 
+Simple App Built using Ionic and LokiJS 
 
 Requirements
 - Ionic Framework
@@ -13,6 +13,5 @@ Requirements
 To Run App: 
 1. Clone the Repo
 2. Cd into the app
-3. In CMD run "Ionic Serve" /w the quotes
-
-
+3. run "npm install"
+4. run "ionic serve --lab"

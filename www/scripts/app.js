@@ -216,7 +216,7 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
     $rootScope.folders = [];
     $rootScope.data = {};
     FoldersService.getAllFolders().then(function(EncryptedFolders) { 
-      console.log(EncryptedFolders);
+      // console.log(EncryptedFolders);
       $rootScope.data.folders = EncryptedFolders;
       var i = 0;
       for (i = 0; i < EncryptedFolders.length; i++) {
@@ -238,10 +238,10 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
         // copyObj(temp, EncryptedFolders[i]);
         $rootScope.folders.push(temp);
       }
-      console.log($scope.data.folders);
-      console.log($scope.folders);
+      console.log($rootScope.data.folders);
+      console.log($rootScope.folders);
       $rootScope.activeFolder = $rootScope.folders[0];
-      $rootScope.data.activeFolder = $rootScope.data.folders[getDataFolderIndex($scope.activeFolder)];
+      $rootScope.data.activeFolder = $rootScope.data.folders[getDataFolderIndex($rootScope.activeFolder)];
       // $scope.selectFolder($rootScope.folders[0]);
     });
   }
@@ -314,6 +314,8 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
     var newFolder = FoldersService.newFolder(folderTitle);
     var encryptedFolder = $cipherFactory.encrypt(folderTitle, $rootScope.storedMasterPass);
     copyObj(encryptedFolder, newFolder);
+    encryptedFolder.entries = [];
+    //newFolder.entries = [];
     // console.log(encryptedFolder);
     FoldersService.addFolder(encryptedFolder);
     newFolder.title = folderTitle;
@@ -341,9 +343,9 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
       $rootScope.data.activeFolder = $rootScope.data.folders[getDataFolderIndex($rootScope.activeFolder)];
       $ionicSideMenuDelegate.toggleLeft(false);
     }
-    // console.log($scope.folders);
-    // console.log($scope.variables);
-    // console.log($scope.authString);
+    // console.log($rootScope.folders);
+    // console.log($rootScope.variables);
+    // console.log($rootScope.authString);
     // console.log($state.current);
   }
 
@@ -363,7 +365,7 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
     if ($rootScope.activeFolder && $rootScope.data.activeFolder) {
       var newFolderTitle = prompt('New name of folder: ' + $rootScope.activeFolder.title);
       if(newFolderTitle) {
-        //$scope.activeFolder.title = newFolderTitle;
+        //$rootScope.activeFolder.title = newFolderTitle;
         var encryptedFolder = $cipherFactory.encrypt(newFolderTitle, $rootScope.storedMasterPass);
         copyObj($rootScope.data.activeFolder, encryptedFolder);
         FoldersService.updateFolder($rootScope.data.activeFolder);
@@ -376,8 +378,8 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
 
   var getFolderIndex = function(folder) {
     var i = 0;
-    for (i = 0; i < $scope.folders.length; i++) {
-      if (folder.id === $scope.folders[i].id) {
+    for (i = 0; i < $rootScope.folders.length; i++) {
+      if (folder.id === $rootScope.folders[i].id) {
         return i;
       }
     }
@@ -406,8 +408,8 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
       },
       destructiveButtonClicked: function() {
         var confirmPopup = $ionicPopup.confirm({
-          title: 'Are you sure you want to delete ' + $scope.activeFolder.title + '?',
-          template: 'All your password entries in ' + $scope.activeFolder.title + ' will be deleted'
+          title: 'Are you sure you want to delete ' + $rootScope.activeFolder.title + '?',
+          template: 'All your password entries in ' + $rootScope.activeFolder.title + ' will be deleted'
         });
 
         confirmPopup.then(function(res) {
@@ -424,11 +426,14 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
         return true;
       }
     });
-    console.log(folder.title);
+  }
+
+  $scope.toggleFolders = function() {
+    $ionicSideMenuDelegate.toggleLeft();
   }
 
   $scope.folderExist = function() {
-    if ($scope.folders) {
+    if ($rootScope.folders) {
       return true;
     }
     return false;
@@ -442,7 +447,7 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
   }
 
   $scope.createEntry = function(entry) {
-    if(!$scope.activeFolder) {
+    if(!$rootScope.activeFolder || !$rootScope.data.activeFolder) {
       return;
     } else if (!entry || !entry.name || !entry.username || !entry.password || entry.name === '' || entry.username === '' || entry.password === '') {
       alert("Name, Username and Password are required!");
@@ -458,22 +463,19 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
     var tempStr = JSON.stringify(tempEntry);
     var encryptedEntry = $cipherFactory.encrypt(tempStr, $rootScope.storedMasterPass);
     encryptedEntry['id'] = Date.now();
-    // console.log(encryptedEntry);
-    $scope.activeFolder.entries.push(encryptedEntry);
-
+    tempEntry.id = encryptedEntry.id;
+    $rootScope.data.activeFolder.entries.push(encryptedEntry);
     // Inefficient, but save all the projects
-    var currFolderTitle = $scope.activeFolder['title'];
-    delete $scope.activeFolder['title'];
-    FoldersService.updateFolder($scope.activeFolder);
-    $scope.activeFolder['title'] = currFolderTitle;
-    //$scope.activeFolder.['tempEntries']
+    FoldersService.updateFolder($rootScope.data.activeFolder);
+    $rootScope.activeFolder.entries.push(tempEntry);
+    //$rootScope.activeFolder.['tempEntries']
     // var i = $scope.getEntryIndex(encryptedEntry);
-    // copyObj($scope.activeFolder.entries[i], entry);
+    // copyObj($rootScope.activeFolder.entries[i], entry);
     // if (i !== -1) {
-    //   $scope.activeFolder.entries[i].name = entry.name;
-    //   $scope.activeFolder.entries[i].username = entry.username;
-    //   $scope.activeFolder.entries[i].password = entry.password;
-    //   $scope.activeFolder.entries[i].remarks = entry.remarks;
+    //   $rootScope.activeFolder.entries[i].name = entry.name;
+    //   $rootScope.activeFolder.entries[i].username = entry.username;
+    //   $rootScope.activeFolder.entries[i].password = entry.password;
+    //   $rootScope.activeFolder.entries[i].remarks = entry.remarks;
     // }
 
     $scope.entryModal.hide();
@@ -485,7 +487,7 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
   };
 
   $scope.showNewEntry = function() {
-    if ($scope.activeFolder) {
+    if ($rootScope.activeFolder && $rootScope.data.activeFolder) {
       $scope.entryModal.show();
     } else {
       alert("Create a Folder First");
@@ -494,7 +496,7 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
 
   $scope.closeNewEntry = function() {
     $scope.entryModal.hide();
-    $scope.newEntry= null;
+    $scope.newEntry = null;
   }
 
   $scope.closeEditEntry = function() {
@@ -526,14 +528,16 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
 
         confirmPopup.then(function(res) {
           if (res) {
-            if ($scope.activeFolder) {
+            if ($rootScope.activeFolder && $rootScope.data.activeFolder) {
               var i = $scope.getEntryIndex(entry);
-              $scope.activeFolder.entries.splice(i, 1);
-              FoldersService.updateFolder($scope.activeFolder);
+              var j = $scope.getEntryIndex(entry);
+              $rootScope.data.activeFolder.entries.splice(j, 1);
+              FoldersService.updateFolder($rootScope.data.activeFolder);
+              $rootScope.activeFolder.entries.splice(i, 1);
               // FoldersService.getAllFolders().then(function(folders) {
               //   console.log(folders);
               // });
-              // console.log($scope.activeFolder);
+              // console.log($rootScope.activeFolder);
             }
           }
         });
@@ -551,7 +555,7 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
   };
 
   $scope.showEditEntry = function(entry) {
-    if ($scope.activeFolder) {
+    if ($rootScope.activeFolder && $rootScope.data.activeFolder) {
       $scope.oldEntry = {};
       copyObj($scope.oldEntry, entry);
       $scope.entry = entry;
@@ -567,10 +571,22 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
       alert("Name, Username and Password are required!");
       return;
     }
-    if ($scope.activeFolder) {
+    if ($rootScope.activeFolder && $rootScope.data.activeFolder) {
       var i = $scope.getEntryIndex(entry);
-      $scope.activeFolder.entries[i] = entry;
-      FoldersService.updateFolder($scope.activeFolder);
+      var j = $scope.getEntryDataIndex(entry);
+      var tempEntry = {
+        name: entry.name,
+        username: entry.username,
+        password: entry.password,
+        remarks: entry.remarks
+      };
+      var tempStr = JSON.stringify(tempEntry);
+      var encryptedEntry = $cipherFactory.encrypt(tempStr, $rootScope.storedMasterPass);
+      encryptedEntry.id = entry.id;
+      // copyObj($rootScope.data.activeFolder.entries[j], encryptedEntry);
+      $rootScope.data.activeFolder.entries[j] = encryptedEntry;
+      FoldersService.updateFolder($rootScope.data.activeFolder);
+      $rootScope.activeFolder.entries[i] = entry;
     } else {
       alert("Error: No active folder");
     }
@@ -578,10 +594,22 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
   };
 
   $scope.getEntryIndex = function(entry) {
-    if ($scope.activeFolder) {
+    if ($rootScope.activeFolder) {
       var i = 0;
-      for (i = 0; i < $scope.activeFolder.entries.length; i++) {
-        if (entry.id === $scope.activeFolder.entries[i].id) {
+      for (i = 0; i < $rootScope.activeFolder.entries.length; i++) {
+        if (entry.id === $rootScope.activeFolder.entries[i].id) {
+          return i;
+        }
+      }
+    }
+    return -1;
+  };
+
+  $scope.getEntryDataIndex = function(entry) {
+    if ($rootScope.data.activeFolder) {
+      var i = 0;
+      for (i = 0; i < $rootScope.data.activeFolder.entries.length; i++) {
+        if (entry.id === $rootScope.data.activeFolder.entries[i].id) {
           return i;
         }
       }
@@ -597,12 +625,8 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
     $state.go('entries');
   }
 
-  $scope.toggleFolders = function() {
-    $ionicSideMenuDelegate.toggleLeft();
-  };
-
   // $timeout(function() {
-  //   if($scope.folders.length == 0) {
+  //   if($rootScope.folders.length == 0) {
   //     while(true) {
   //       var foldertTitle = prompt('Your first Folder:');
   //       if(folderTitle) {

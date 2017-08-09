@@ -124,18 +124,19 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
 
   return {
     initDB: function() {
-      var fsAdapter = new LokiCordovaFSAdapter({"prefix": "loki"});
-
-      _db = new Loki('foldersDB', {
-        autosave: true,
-        autosaveInterval: 1000,
-        persistenceAdapter: fsAdapter
-      });
+      var fsAdapter1 = new LokiCordovaFSAdapter({"prefix": "loki"});
+      var fsAdapter2 = new LokiCordovaFSAdapter({"prefix": "loki"});
 
       _varDb = new Loki('variablesDB', {
         autosave: true,
         autosaveInterval: 1000,
-        persistenceAdapter: fsAdapter
+        persistenceAdapter: fsAdapter2
+      });
+
+      _db = new Loki('foldersDB', {
+        autosave: true,
+        autosaveInterval: 1000,
+        persistenceAdapter: fsAdapter1
       });
     },
     getAllFolders: function() {
@@ -210,13 +211,13 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
   }
 })
 
-.controller('FolderCtrl', function($rootScope, $scope, $timeout, $ionicModal, FoldersService, $cipherFactory, $ionicSideMenuDelegate, $ionicActionSheet, $stateParams, $ionicPopup, $state) {
+.controller('FolderCtrl', function($rootScope, $scope, $ionicModal, FoldersService, $cipherFactory, $ionicSideMenuDelegate, $ionicActionSheet, $stateParams, $ionicPopup, $state) {
 
   var onAuth = function() {
     $rootScope.folders = [];
     $rootScope.data = {};
     FoldersService.getAllFolders().then(function(EncryptedFolders) { 
-      // console.log(EncryptedFolders);
+      console.log(EncryptedFolders);
       $rootScope.data.folders = EncryptedFolders;
       var i = 0;
       for (i = 0; i < EncryptedFolders.length; i++) {
@@ -301,13 +302,53 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
         copyObj($scope.authString, temp);
         FoldersService.updateVariable($scope.authString);
         $rootScope.storedMasterPass = resetNewMasterPassword;
+        onReset(oldMasterPassword, resetNewMasterPassword);
         resetNewMasterPassword = '';
         confirmRestetPassword = '';
         oldMasterPassword = '';
-        onAuth();
+        //onAuth();
         $state.go('entries');
       }
     }
+  }
+
+  var onReset = function(oldMasterPassword, resetNewMasterPassword) {
+    $rootScope.folders = [];
+    $rootScope.data = {};
+    FoldersService.getAllFolders().then(function(EncryptedFolders) { 
+      console.log(EncryptedFolders);
+      $rootScope.data.folders = [];
+      var i = 0;
+      for (i = 0; i < EncryptedFolders.length; i++) {
+        // delete EncryptedFolders[i].tempEntries;
+        // delete EncryptedFolders[i].title;
+        var decipherFolderTitle = $cipherFactory.decrypt(EncryptedFolders[i].cipher_text, oldMasterPassword, EncryptedFolders[i].salt, EncryptedFolders[i].iv);
+        var newEncyptedFolder = $cipherFactory.encrypt(decipherFolderTitle, resetNewMasterPassword);
+        copyObj(EncryptedFolders[i], newEncyptedFolder);
+        var temp = {};
+        temp['title'] = decipherFolderTitle;
+        temp['id'] = EncryptedFolders[i].id;
+        temp['entries'] = [];
+        var j = 0;
+        for (j = 0; j < EncryptedFolders[i].entries.length; j++) {
+          var decipherEntryStr = $cipherFactory.decrypt(EncryptedFolders[i].entries[j].cipher_text, oldMasterPassword, EncryptedFolders[i].entries[j].salt, EncryptedFolders[i].entries[j].iv);
+          var decipherEntryObj = JSON.parse(decipherEntryStr);
+          var newEncryptedObj = $cipherFactory.encrypt(decipherEntryStr, resetNewMasterPassword);
+          copyObj(EncryptedFolders[i].entries[j], newEncryptedObj);
+          decipherEntryObj['id'] = EncryptedFolders[i].entries[j].id;
+          // console.log(decipherEntryObj);
+          temp.entries.push(decipherEntryObj);
+        }
+        $rootScope.data.folders.push(EncryptedFolders[i]);
+        FoldersService.updateFolder(EncryptedFolders[i]);
+        $rootScope.folders.push(temp);
+      }
+      console.log($rootScope.data.folders);
+      console.log($rootScope.folders);
+      $rootScope.activeFolder = $rootScope.folders[0];
+      $rootScope.data.activeFolder = $rootScope.data.folders[getDataFolderIndex($rootScope.activeFolder)];
+      // $scope.selectFolder($rootScope.folders[0]);
+    });
   }
 
   var createFolder = function(folderTitle) {

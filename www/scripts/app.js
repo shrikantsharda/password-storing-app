@@ -43,6 +43,10 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
     } else {
       $state.go('login');
     }
+
+    if (navigator && navigator.splashscreen) {
+      navigator.splashscreen.hide();
+    }
   });
   $ionicPlatform.registerBackButtonAction(function (event) {
     event.preventDefault();

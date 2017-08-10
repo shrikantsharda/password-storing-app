@@ -9,7 +9,7 @@
 
 angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
 
-.run(function($ionicPlatform, $cordovaSQLite, $rootScope, FoldersService, $state, $cipherFactory) {
+.run(function($ionicPlatform, $cordovaSQLite, $rootScope, FoldersService, $state, $cipherFactory, $ionicSideMenuDelegate) {
   $ionicPlatform.ready(function() {
     if(window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
       // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -49,9 +49,17 @@ angular.module('App1', ['ionic', 'ngCordova', 'lokijs', 'ion-floating-menu'])
   }, 100);
   document.addEventListener("resume", function() {
     $state.go("login", {}, {location: "replace"});
+    if ($ionicSideMenuDelegate.isOpenLeft()) {
+      $ionicSideMenuDelegate.toggleLeft();
+    }
+    //$ionicSideMenuDelegate.toggleLeft();
   }, false);
   document.addEventListener("pause", function() {
     $state.go("login", {}, {location: "replace"});
+    if ($ionicSideMenuDelegate.isOpenLeft()) {
+      $ionicSideMenuDelegate.toggleLeft();
+    }
+    //$ionicSideMenuDelegate.toggleLeft();
   }, false);
 })
 
